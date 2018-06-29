@@ -1,0 +1,293 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <div class="content">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-lg-6 col-md-6 col-lg-offset-3">
+                    <div class="card">
+                        <div class="header">
+                            <h4 class="title text-center">Facturacion</h4>
+
+                        </div>
+                        <div class="content">
+                            <div class="row">
+                                <div class="text-center" >
+                                    <a  class="btn btn-info btn-fill btn-wd"  href="{{ path('admin_venta_index') }}">Volver a la lista</a>
+
+                                    <button onclick="cleara()" class="btn btn-warning btn-fill btn-wd">Nueva Factura</button>
+
+                                </div>
+
+
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6 col-md-6 ">
+                    <div class="card">
+                        <div class="header">
+                            <h4 class="title text-center">SELECCIONE LOS PRODUCTOS DE LA VENTA</h4>
+
+                        </div>
+                        <div class="content">
+                            <div class="row">
+                                <div class="col-md-4 ">
+                                    <div class="form-group">
+                                        <label>Cliente:</label>
+                                        <select onchange="SelectCliente()" class="form-control border-input" name="" id="idCliente">
+                                            <option value=""></option>
+
+                                            {% for cliente in clientes %}
+                                                <option value="{{ cliente.id }}">{{ cliente.nombre }}</option>
+
+                                            {% endfor %}
+
+                                        </select>
+                                    </div>
+                                </div>
+
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="content table-responsive table-full-width">
+                                        <table id="tablaProductoVenta" class="table ">
+                                            <thead>
+                                            <tr>
+                                                <td>Producto</td>
+                                                <td>Precio</td>
+                                                <td>Cantidad</td>
+                                                <td >Agregá</td>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+
+                                            </tbody>
+                                        </table>
+                                    </div>
+
+                                </div>
+                            </div>
+
+
+
+
+                            <div class="clearfix"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-6 col-md-6 ">
+                    <div class="card">
+                        <div class="header">
+                            <h4 class="title text-center">PRODUCTOS ELEGIDOS</h4>
+
+                        </div>
+                        <div class="content">
+                            <div class="row">
+                                <div class="col-md-6 " >
+                                    <div class="form-inline" >
+                                        <label>Total:</label>
+                                        <span id="total"></span>
+                                    </div>
+                                </div>
+
+
+                            </div>
+
+                            <br><br><br>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="content table-responsive table-full-width">
+
+                                        <table id="tablaVenta" class="table table-responsive">
+                                            <thead>
+                                            <tr>
+                                                <td>Producto</td>
+                                                <td>Precio</td>
+                                                <td>Cantidad</td>
+                                                <td>Total</td>
+
+                                                <td>Eliminar</td>
+                                            </tr>
+                                            </thead>
+                                            <tbody id="tablaVentaBody">
+
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+
+
+                            <div id="button" class="text-center hide">
+                                <button onclick="Facturar()" class="btn btn-success btn-fill btn-wd">Facturar</button>
+
+                                <button id="pdfhide" class="btn btn-primary btn-fill btn-wd hide"  onclick="pdf()"  >Exportar pdf</button>
+                            </div>
+                            <div class="clearfix"></div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+
+{% endblock %}
+{% block javascripts %}
+    {{ parent() }}
+
+    <script>
+        $(document).ready(function() { $("#idCliente").select2(); });
+    </script>
+    <script type="text/javascript">
+        const tablaProductoVenta = "#tablaProductoVenta";
+        const tablaVenta = "#tablaVenta";
+
+        var agregadosArray=[];
+        var idCliente;
+        var total=0;
+        var idPdf=0;
+        function SelectCliente() {
+            $(tablaProductoVenta + ' tbody').html('');
+
+           idCliente=$( "#idCliente" ).val();
+            $(document).ready(function () {
+                $.ajax({
+                    type: "POST",
+                    url: "{{ path ("listaProductosClienteJson") }}",
+                    data: {idCliente:idCliente}
+                }).done(function (data) {
+                    var fila;
+                    for (var i = 0; i < data.length; i++) {
+                        fila = '<tr><td id="a'+data[i].id+'">'+data[i].descripcion+'</td> <td>$'+data[i].precioVerdadero+'</td><td><input type="number" " id="'+data[i].id+'" class="form-control border-input" type=""></td><td><button class="btn btn-success btn-fill btn-wd" onclick="Agregar('+data[i].id+','+data[i].precioVerdadero+')">Agregar</button></td></tr>';
+                        /*
+                        */
+                        $(tablaProductoVenta + ' tbody').append(fila);
+
+                    }
+                    var table = $('#tablaProductoVenta').DataTable({
+                        "language": {
+                            "sProcessing":    "Procesando...",
+                            "sLengthMenu":    "Mostrar _MENU_ registros",
+                            "sZeroRecords":   "No se encontraron resultados",
+                            "sEmptyTable":    "Ningún dato disponible en esta tabla",
+                            "sInfo":          "Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros",
+                            "sInfoEmpty":     "Mostrando registros del 0 al 0 de un total de 0 registros",
+                            "sInfoFiltered":  "(filtrado de un total de _MAX_ registros)",
+                            "sInfoPostFix":   "",
+                            "sSearch":        "Buscar:",
+                            "sUrl":           "",
+                            "sInfoThousands":  ",",
+                            "sLoadingRecords": "Cargando...",
+                            "oPaginate": {
+                                "sFirst":    "Primero",
+                                "sLast":    "Último",
+                                "sNext":    "Siguiente",
+                                "sPrevious": "Anterior"
+                            },
+                            "oAria": {
+                                "sSortAscending":  ": Activar para ordenar la columna de manera ascendente",
+                                "sSortDescending": ": Activar para ordenar la columna de manera descendente"
+                            }
+
+                        },
+
+                    });
+                });
+
+            });
+
+        }
+        function Agregar(id,precio,) {
+            var cantidad=$( "#"+id ).val();
+            var descripcion=$( "#a"+id ).text();
+            $( "#button" ).removeClass( "hide" );
+
+            var precioTotal=parseFloat(precio)*cantidad;
+
+             agregadosArray.push({idProducto:id,idCliente:idCliente,descripcion:descripcion,cantidad:cantidad,precioUnidad:precio,precioTotal:precioTotal});
+            $(tablaVenta + ' tbody').html('');
+
+            var fila;
+            total=0;
+            for (var i = 0; i < agregadosArray.length; i++) {
+                fila = '<tr><td >'+agregadosArray[i].descripcion+'</td> <td>$'+agregadosArray[i].precioUnidad+'</td><td>'+agregadosArray[i].cantidad+'</td><td>$'+agregadosArray[i].precioTotal+'</td><td><button onclick="eliminar('+i+')" class="btn btn-danger btn-fill btn-wd">Eliminar</button></td></tr>';
+                /*
+                */
+                total=parseFloat(agregadosArray[i].precioTotal)+parseFloat(total);
+                $(tablaVenta + ' tbody').append(fila);
+
+
+            }
+
+            $( "#total" ).text( "$"+total );
+
+        }
+        function Facturar() {
+            $(document).ready(function () {
+                $.ajax({
+                    type: "POST",
+                    url: "{{ path ("altaVenta") }}",
+                    data: {idCliente:idCliente,productoVenta:agregadosArray,total:total}
+                }).done(function (data) {
+                    console.log(data);
+                    {#$("#href").attr("href", 'href="{{ path('pdfVenta', { 'id': 14 }) }}"');#}
+                    idPdf=data;
+                    location.href = "http://distribuidoradhr.com.ar/venta/pdfVenta/"+idPdf;
+
+                    $( "#pdfhide" ).removeClass( "hide" );
+
+                    $.notify({
+                        icon: 'ti-check-box',
+                        message: "Factura realizada con exito"
+
+                    },{
+                        type: 'success',
+                        timer: 4000
+                    });
+                });
+
+            })
+        }
+        function cleara() {
+            location.reload();
+
+        }
+
+        function pdf() {
+
+            {#var route = "{{ path('pdfVenta', {'id': idPdf})|escape('js') }}";#}
+
+            location.href = "http://distribuidoradhr.com.ar/venta/pdfVenta/"+idPdf;
+
+        }
+
+        function eliminar(id){
+
+            agregadosArray.splice(id, 1);
+            $("#tablaVentaBody").empty();
+
+            var fila;
+            total=0;
+            for (var i = 0; i < agregadosArray.length; i++) {
+                fila = '<tr><td >'+agregadosArray[i].descripcion+'</td> <td>$'+agregadosArray[i].precioUnidad+'</td><td>'+agregadosArray[i].cantidad+'</td><td>$'+agregadosArray[i].precioTotal+'</td><td><button onclick="eliminar('+i+')" class="btn btn-danger btn-fill btn-wd">Eliminar</button></td></tr>';
+                /*
+                */
+                total=parseFloat(agregadosArray[i].precioTotal)+parseFloat(total);
+                $(tablaVenta + ' tbody').append(fila);
+
+
+            }
+
+
+            $( "#total" ).text( "$"+total );
+        }
+
+
+
+    </script>
+{% endblock %}

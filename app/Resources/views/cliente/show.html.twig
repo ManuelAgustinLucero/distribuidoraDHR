@@ -1,0 +1,97 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <div class="content">
+        <div class="container-fluid">
+            <div class="row">
+
+
+                <div class="col-lg-8 col-md-7 col-lg-offset-2">
+                    <div class="card">
+                        <div class="header">
+                            <h4 class="title ">Detalle</h4>
+                            <hr>
+                        </div>
+                        <div class="content">
+                            <div class="row">
+                                <div class="col-md-4 col-md-offset-2">
+                                    <div class="form-group">
+                                        <label>Nombre:</label>
+                                        {{ cliente.nombre }}
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>Telefono:</label>
+                                        {{ cliente.telefono }}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-4 col-md-offset-2">
+                                    <div class="form-group">
+                                        <label>Zona:</label>
+                                        {{ cliente.zona }}
+
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6 ">
+                                    <div class="form-group">
+                                        <label >Direccion:</label>
+                                        {{ cliente.direccion }}
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+
+                            <div class="row">
+
+                                <div class="col-md-4 col-md-offset-2">
+                                    <div class="form-group">
+                                        <label>Email:</label>
+                                        {{ cliente.email }}
+                                    </div>
+                                </div>
+                                <div class="col-md-4 ">
+                                    <div class="form-group">
+                                        <label>Detalle:</label>
+                                        {{ cliente.detalle }}
+                                    </div>
+                                </div>
+                            </div>
+
+
+                            <hr>
+
+
+                            <div class="text-center">
+                                {{ form_start(delete_form) }}
+                                <input   class=" btn btn-danger btn-fill btn-wd" type="submit" value="Eliminar">
+                                {{ form_end(delete_form) }}
+                                <br>
+                                {#<a  class=" btn btn-info btn-fill btn-wd"  href="{{ path('admin_pedido_edit', { 'id': pedido.id }) }}">Editar</a>#}
+
+                                <a  class=" btn btn-info btn-fill btn-wd" href="{{ path('admin_cliente_index') }}">Volver al menu</a>
+                                <a class=" btn btn-success btn-fill btn-wd" href="{{ path('admin_cliente_edit', { 'id': cliente.id }) }}">Edit</a>
+
+                            </div>
+                            <div class="clearfix"></div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+            </div>
+        </div>
+    </div>
+
+
+{% endblock %}

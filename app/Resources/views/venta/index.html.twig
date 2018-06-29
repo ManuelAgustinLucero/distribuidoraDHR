@@ -1,0 +1,259 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <div class="content">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="card">
+                        <div class="header">
+                            <h4 class="title">Lista de Ventas</h4>
+
+                            <br>
+                            {#<p class="category">Here is a subtitle for this table</p>#}
+                        </div>
+                        <div class="content table-responsive table-full-width">
+                            <div class="text-center">
+                                 <div class="row">
+                                        <div class="text-center">
+                                            <label for="">Selecione fecha para filtrar</label>
+                                            <input id="fechaselecionada"  class="form-inline" type="date">
+                                            <button class="btn btn-info btn-fill btn-wd" onclick="fecha()">Filtrar</button>
+
+                                        </div>
+                                 </div>
+                            </div>
+                            <hr>
+                            <div class="text-center">
+                                <a class="btn btn-info btn-fill btn-wd" onclick="pdfCliente()" target="_new">Export Cliente PDF</a>
+                                {#<br>#}
+                                {#<br>#}
+                                <a class="btn btn-info btn-fill btn-wd" onclick="pdfProducto()" target="_new">Export Productos PDF</a>
+                                <button class="btn btn-warning btn-fill btn-wd" onclick="recargar()">Recargar</button>
+
+                                <hr>
+
+                            </div>
+                            <table id="venta" class="table table-striped">
+                                <thead>
+                                <tr>
+                                    {#<td></td>#}
+                                    <th class="text-center">Seleccionar</th>
+                                    <th class="text-center">N° de venta</th>
+                                    <th class="text-center">Cliente</th>
+
+                                    <th  class="text-center">Total</th>
+                                    {#<th>Totalpagado</th>#}
+                                    {#<th>Saldada</th>#}
+                                    {#<th>Actualizada</th>#}
+                                    <th  class="text-center">Fecha</th>
+                                    <th  class="text-center">Aciones</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {% for ventum in ventas %}
+                                    <tr>
+                                        {#<td></td>#}
+                                            <td  class=" text-center">
+                                                <input   onclick="checkId({{ ventum.id }})"  class="text-center checkbox"   type="checkbox">
+
+                                            </td>
+
+                                        <td class="text-center" >{{ ventum.id }}</td>
+                                        <td class="text-center" >{{ ventum.Cliente }}</td>
+
+                                        <td  class="text-center">${{ ventum.total }}</td>
+                                        {#<td>${{ ventum.totalPagado }}</td>#}
+                                        {#<td>{% if ventum.saldada %}Yes{% else %}No{% endif %}</td>#}
+                                        {#<td>{% if ventum.actualizada %}Yes{% else %}No{% endif %}</td>#}
+                                        <td  class="text-center">{% if ventum.fecha %}{{ ventum.fecha|date('Y-m-d H:i:s') }}{% endif %}</td>
+                                        <td  class="text-center">
+                                                {#<li>#}
+                                                    {#<a href="{{ path('admin_venta_show', { 'id': ventum.id }) }}">Detalle</a>#}
+                                                {#</li>#}
+                                                {#<li>#}
+                                                    {#<a href="{{ path('admin_venta_edit', { 'id': ventum.id }) }}">Editar</a>#}
+                                                {#</li>#}
+                                                    <a target="_new" class="btn btn-info btn-fill btn-wd" href="{{ path('pdfVenta', { 'id': ventum.id }) }}">ExportPdf</a>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                            <div class="row">
+                                <div class="text-center">
+                                    <a class="btn btn-info btn-fill btn-wd text-center" href="{{ path('admin_venta_new') }}">Crear Factura</a>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+{% block javascripts %}
+    {{ parent() }}
+    <script type="text/javascript">
+        var table = $('#venta').DataTable({
+            "lengthMenu": [ [20, 50,100, -1], [ 20, 50,100, "Todos"] ],
+
+            "language": {
+                "sProcessing":    "Procesando...",
+                "sLengthMenu":    "Mostrar _MENU_ registros",
+                "sZeroRecords":   "No se encontraron resultados",
+                "sEmptyTable":    "Ningún dato disponible en esta tabla",
+                "sInfo":          "Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros",
+                "sInfoEmpty":     "Mostrando registros del 0 al 0 de un total de 0 registros",
+                "sInfoFiltered":  "(filtrado de un total de _MAX_ registros)",
+                "sInfoPostFix":   "",
+                "sSearch":        "Buscar:",
+                "sUrl":           "",
+                "sInfoThousands":  ",",
+                "sLoadingRecords": "Cargando...",
+                "oPaginate": {
+                    "sFirst":    "Primero",
+                    "sLast":    "Último",
+                    "sNext":    "Siguiente",
+                    "sPrevious": "Anterior"
+                },
+                "oAria": {
+                    "sSortAscending":  ": Activar para ordenar la columna de manera ascendente",
+                    "sSortDescending": ": Activar para ordenar la columna de manera descendente"
+                }
+
+            },
+            dom: 'B <"clear"> lfrtip',
+            order: [[ 1, "desc" ]],
+
+            buttons: [
+                {
+                    extend: 'csvHtml5',
+                    exportOptions: {
+                        columns: [   2,3,4 ]
+                    }
+                },
+                {
+                    extend: 'excelHtml5',
+                    exportOptions: {
+                        columns: [   2,3,4 ]
+                    }
+                },
+                {
+                    extend: 'pdfHtml5',
+                    exportOptions: {
+                        columns: [   2,3,4 ],
+
+                    },
+                    pageSize: 'LEGAL'
+
+                },
+                {
+                    extend: 'print',
+                    exportOptions: {
+                        columns: [   2,3,4]
+                    }
+                }
+
+            ]
+
+        });
+
+
+    </script>
+    <script type="text/javascript">
+        var block=1;
+
+        if (block != 1){
+            block=2;
+        }
+
+        var idArray=[];
+        function checkId(id) {
+            if (idArray.includes(id)==false){
+                idArray.push(parseInt(id));
+
+            }
+            else{
+                var index = idArray.indexOf(id);
+
+                idArray.splice(index, 1);
+
+            }
+
+        }
+
+        function pdfCliente() {
+
+            {#var route = "{{ path('pdfVenta', {'id': idPdf})|escape('js') }}";#}
+            if (idArray.length !=0){
+                window.open("http://distribuidoradhr.com.ar/venta/pdfCliente/"+idArray, '_blank');
+
+            }
+            else{
+                $.notify({
+                    icon: 'ti-check-box',
+                    message: "NINGUN  CLIENTE SELECIONADO"
+
+                },{
+                    type: 'danger',
+                    timer: 4000
+                });
+            }
+
+        }
+        function pdfProducto() {
+
+            {#var route = "{{ path('pdfVenta', {'id': idPdf})|escape('js') }}";#}
+            if (idArray.length !=0){
+                window.open("http://distribuidoradhr.com.ar/venta/pdfProducto/"+idArray, '_blank');
+
+            }
+            else{
+                $.notify({
+                    icon: 'ti-check-box',
+                    message: "NINGUN  CLIENTE SELECIONADO"
+
+                },{
+                    type: 'danger',
+                    timer: 4000
+                });
+            }
+
+        }
+        function recargar() {
+            location.reload();
+
+        }
+        function fecha() {
+            var fecha=$("#fechaselecionada").val();
+            console.log(fecha);
+            location.href = "http://distribuidoradhr.com.ar/venta/fechaVenta/"+fecha;
+
+            {#$(document).ready(function () {#}
+                {#$.ajax({#}
+                    {#type: "POST",#}
+                    {#url: "{{ path ("fechaVenta") }}",#}
+                    {#data: {fecha:fecha}#}
+                {#}).done(function (data) {#}
+
+                    {#console.log(data);#}
+                    {#$.notify({#}
+                        {#icon: 'ti-check-box',#}
+                        {#message: "Factura realizada con exito"#}
+
+                    {#},{#}
+                        {#type: 'success',#}
+                        {#timer: 4000#}
+                    {#});#}
+                {#});#}
+
+            {#})#}
+        }
+    </script>
+{% endblock %}

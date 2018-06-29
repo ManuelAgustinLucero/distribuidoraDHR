@@ -1,0 +1,204 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+
+    <div class="content">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="card">
+                        <div class="header">
+                            <h4 class="title">Lista de Productos</h4>
+
+                            <hr>
+                            <p class="category  col-lg-offset-4">Escriba el valor que desea aumentar o restar a los productos <span class="text-danger"> (+ para sumar, - para restar)</span></p>
+                            <br>
+                            <div class="row">
+                                <div class="col-md-2 col-lg-offset-4">
+                                    <input id="valor" class="form-control border-input" type="number" placeholder="Ej: +8">
+
+                                </div>
+
+                                <div class="col-md-2 ">
+                                    <button onclick="cargar()" class="btn btn-info btn-fill btn-wd">Cargar</button>
+
+                                </div>
+                            </div>
+
+                        </div>
+                        <hr>
+                        <div class="content table-responsive table-full-width">
+                            <table id="produdto" class="table table-striped">
+                                <thead>
+                                <tr>
+                                    <th class="text-center">Seleccionar</th>
+                                    <th class="text-center">Descripcion</th>
+                                    <th class="text-center">Precio</th>
+                                    <th class="text-center">Actions</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {% for producto in productos %}
+                                    <tr>
+                                        <td  class=" text-center">
+                                            <input   onclick="checkId({{ producto.id }})"  class="text-center checkbox"   type="checkbox">
+                                        </td>
+
+                                        <td class="text-center">{{ producto.descripcion }}</td>
+                                        <td class="text-center">${{ producto.precio }}</td>
+                                        <td class="text-center">
+                                                    <a href="{{ path('admin_producto_show', { 'id': producto.id }) }}">Detalle</a>
+                                            <br>
+                                                    <a href="{{ path('admin_producto_edit', { 'id': producto.id }) }}">Editar</a>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                            <div class="row">
+                                <div class="col-md-6 col-md-offset-5">
+                                    <a class="btn btn-info btn-fill btn-wd" href="{{ path('admin_producto_new') }}">Crear nuevo producto</a>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+{% block javascripts %}
+    {{ parent() }}
+    <script type="text/javascript">
+
+        var table = $('#produdto').DataTable({
+            "language": {
+                "sProcessing":    "Procesando...",
+                "sLengthMenu":    "Mostrar _MENU_ registros",
+                "sZeroRecords":   "No se encontraron resultados",
+                "sEmptyTable":    "Ningún dato disponible en esta tabla",
+                "sInfo":          "Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros",
+                "sInfoEmpty":     "Mostrando registros del 0 al 0 de un total de 0 registros",
+                "sInfoFiltered":  "(filtrado de un total de _MAX_ registros)",
+                "sInfoPostFix":   "",
+                "sSearch":        "Buscar:",
+                "sUrl":           "",
+                "sInfoThousands":  ",",
+                "sLoadingRecords": "Cargando...",
+                "oPaginate": {
+                    "sFirst":    "Primero",
+                    "sLast":    "Último",
+                    "sNext":    "Siguiente",
+                    "sPrevious": "Anterior"
+                },
+                "oAria": {
+                    "sSortAscending":  ": Activar para ordenar la columna de manera ascendente",
+                    "sSortDescending": ": Activar para ordenar la columna de manera descendente"
+                }
+
+            },
+            dom: 'B <"clear"> lfrtip',
+
+            buttons: [
+                {
+                    extend: 'csvHtml5',
+                    exportOptions: {
+                        columns: [   1,2 ]
+                    }
+                },
+                {
+                    extend: 'excelHtml5',
+                    exportOptions: {
+                        columns: [   1,2  ]
+                    }
+                },
+                {
+                    extend: 'pdfHtml5',
+                    exportOptions: {
+                        columns: [   1,2 ],
+
+                    },
+                    pageSize: 'LEGAL'
+
+                },
+                {
+                    extend: 'print',
+                    exportOptions: {
+                        columns: [   1,2 ]
+                    }
+                }
+
+            ]
+
+        });
+        var idArray=[];
+
+        $( ".form-control-sm" ).addClass( "border-input" );
+        function cargar(){
+            var valor= $("#valor").val();
+
+            if (idArray.length !=0 && valor!=''){
+                $.notify({
+                    icon: 'ti-check-box',
+                    message: "Los cambios estan siendo procesados"
+
+                },{
+                    type: 'warning',
+                    timer: 5000
+                });
+                $(document).ready(function () {
+                    $.ajax({
+                        type: "POST",
+                        url: "{{ path ("admin_producto_cargar") }}",
+                        data: {valor:valor,idArray:idArray}
+                    }).done(function (data) {
+                        setTimeout(time,2000);
+
+                        $.notify({
+                            icon: 'ti-check-box',
+                            message: "Carga realizada con exito"
+
+                        },{
+                            type: 'success',
+                            timer: 5000
+                        });
+                    });
+
+                })
+            }
+            else{
+                $.notify({
+                    icon: 'ti-check-box',
+                    message: "NINGUN  PRODUCTO SELECCIONADO O PRECIO NO DEFINIDO"
+
+                },{
+                    type: 'danger',
+                    timer: 2000
+                });
+            }
+
+        }
+        function time() {
+            location.reload();
+
+        }
+        function checkId(id) {
+            if (idArray.includes(id)==false){
+                idArray.push(parseInt(id));
+
+            }
+            else{
+                var index = idArray.indexOf(id);
+
+                idArray.splice(index, 1);
+
+            }
+        }
+    </script>
+
+{% endblock %}

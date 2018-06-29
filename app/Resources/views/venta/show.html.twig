@@ -1,0 +1,48 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <h1>Ventum</h1>
+
+    <table>
+        <tbody>
+            <tr>
+                <th>Id</th>
+                <td>{{ ventum.id }}</td>
+            </tr>
+            <tr>
+                <th>Total</th>
+                <td>{{ ventum.total }}</td>
+            </tr>
+            <tr>
+                <th>Totalpagado</th>
+                <td>{{ ventum.totalPagado }}</td>
+            </tr>
+            <tr>
+                <th>Saldada</th>
+                <td>{% if ventum.saldada %}Yes{% else %}No{% endif %}</td>
+            </tr>
+            <tr>
+                <th>Actualizada</th>
+                <td>{% if ventum.actualizada %}Yes{% else %}No{% endif %}</td>
+            </tr>
+            <tr>
+                <th>Fecha</th>
+                <td>{% if ventum.fecha %}{{ ventum.fecha|date('Y-m-d H:i:s') }}{% endif %}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <ul>
+        <li>
+            <a href="{{ path('admin_venta_index') }}">Back to the list</a>
+        </li>
+        <li>
+            <a href="{{ path('admin_venta_edit', { 'id': ventum.id }) }}">Edit</a>
+        </li>
+        <li>
+            {{ form_start(delete_form) }}
+                <input type="submit" value="Delete">
+            {{ form_end(delete_form) }}
+        </li>
+    </ul>
+{% endblock %}

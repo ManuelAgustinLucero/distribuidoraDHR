@@ -1,0 +1,77 @@
+<div class="sidebar" data-background-color="white" data-active-color="danger">
+
+    <div class="sidebar-wrapper ">
+        <div class="logo">
+            <a href="http://www.creative-tim.com" class="simple-text text-success">
+                DHR
+            </a>
+
+        </div>
+
+        <div class="box">
+            <ul class="nav">
+                {% if is_granted('ROLE_ADMIN') %}
+                    <li  class="">
+                        <a href="{{ path('homepage')}}">
+                            <i class="ti-view-list-alt"></i>
+                            <p>Home</p>
+                        </a>
+                    </li>
+                    <hr>
+                    <li  >
+                        <a href="{{ path('admin_cliente_index')}}">
+                            <i class="ti-view-list-alt"></i>
+                            <p>Cliente</p>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="{{ path('admin_cliente_new')}}">
+                            <i class="ti-pin2"></i>
+                            <p>Crear Cliente</p>
+                        </a>
+                    </li>
+                    <hr>
+                    <li >
+                        <a href="{{ path('admin_producto_index')}}">
+                            <i class="ti-view-list-alt"></i>
+                            <p>Productos</p>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="{{ path('admin_producto_new')}}">
+                            <i class="ti-pin2"></i>
+                            <p>Crear Producto</p>
+                        </a>
+                    </li>
+                    <hr>
+                    <li >
+                        <a href="{{ path('admin_venta_index')}}">
+                            <i class="ti-view-list-alt"></i>
+                            <p>Ventas</p>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="{{ path('admin_venta_new')}}">
+                            <i class="ti-pin2"></i>
+                            <p>Crear Venta</p>
+                        </a>
+                    </li>
+                    <hr>
+                    <li>
+                        <a class="" href="{{ path('fos_user_security_logout') }}">
+                            {{ 'layout.logout'|trans({}, 'FOSUserBundle') }}
+                            <i class="ti-back-left">
+                            </i>
+
+                        </a>
+                    </li>
+
+
+                {% endif %}
+
+            </ul>
+        </div>
+
+    </div>
+</div>
+

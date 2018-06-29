@@ -1,0 +1,129 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <div class="content">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="card">
+                        <div class="header">
+                            <h4 class="title">Lista de Ventas</h4>
+
+                            <br>
+                            {#<p class="category">Here is a subtitle for this table</p>#}
+                        </div>
+                        <div class="content table-responsive table-full-width">
+
+
+                            <table id="showVentas" class="table table-striped">
+                                <thead>
+                                <tr>
+                                    <th class="text-center">N° de venta</th>
+                                    <th class="text-center">Cliente</th>
+
+                                    <th  class="text-center">Total</th>
+                                    {#<th>Totalpagado</th>#}
+                                    {#<th>Saldada</th>#}
+                                    {#<th>Actualizada</th>#}
+                                    <th  class="text-center">Fecha</th>
+                                    <th  class="text-center">Aciones</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {% for ventum in ventas %}
+                                    <tr>
+
+
+                                        <td class="text-center" >{{ ventum.id }}</td>
+                                        <td class="text-center" >{{ ventum.Cliente }}</td>
+
+                                        <td  class="text-center">${{ ventum.total }}</td>
+
+                                        <td  class="text-center">{% if ventum.fecha %}{{ ventum.fecha|date('Y-m-d H:i:s') }}{% endif %}</td>
+                                        <td  class="text-center">
+                                            <a class="btn btn-info btn-fill btn-wd" href="{{ path('pdfVenta', { 'id': ventum.id }) }}">ExportPdf</a>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+
+
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+
+{% endblock %}
+{% block javascripts %}
+    {{ parent() }}
+    <script type="text/javascript">
+        var table = $('#showVentas').DataTable({
+            "language": {
+                "sProcessing":    "Procesando...",
+                "sLengthMenu":    "Mostrar _MENU_ registros",
+                "sZeroRecords":   "No se encontraron resultados",
+                "sEmptyTable":    "Ningún dato disponible en esta tabla",
+                "sInfo":          "Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros",
+                "sInfoEmpty":     "Mostrando registros del 0 al 0 de un total de 0 registros",
+                "sInfoFiltered":  "(filtrado de un total de _MAX_ registros)",
+                "sInfoPostFix":   "",
+                "sSearch":        "Buscar:",
+                "sUrl":           "",
+                "sInfoThousands":  ",",
+                "sLoadingRecords": "Cargando...",
+                "oPaginate": {
+                    "sFirst":    "Primero",
+                    "sLast":    "Último",
+                    "sNext":    "Siguiente",
+                    "sPrevious": "Anterior"
+                },
+                "oAria": {
+                    "sSortAscending":  ": Activar para ordenar la columna de manera ascendente",
+                    "sSortDescending": ": Activar para ordenar la columna de manera descendente"
+                }
+
+            },
+
+            dom: 'B <"clear"> lfrtip',
+
+            buttons: [
+                {
+                    extend: 'csvHtml5',
+                    exportOptions: {
+                        columns: [   1,2,3,4 ]
+                    }
+                },
+                {
+                    extend: 'excelHtml5',
+                    exportOptions: {
+                        columns: [   1,2,3,4 ]
+                    }
+                },
+                {
+                    extend: 'pdfHtml5',
+                    exportOptions: {
+                        columns: [   1,2,3,4],
+
+                    },
+                    pageSize: 'LEGAL'
+
+                },
+                {
+                    extend: 'print',
+                    exportOptions: {
+                        columns: [   1,2,3,4]
+                    }
+                }
+
+            ]
+        });
+
+
+    </script>
+
+{% endblock %}

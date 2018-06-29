@@ -1,0 +1,39 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <h1>Exports list</h1>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>File</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for export in exports %}
+            <tr>
+                <td><a href="{{ path('admin_export_show', { 'id': export.id }) }}">{{ export.id }}</a></td>
+                <td>{{ export.file }}</td>
+                <td>
+                    <ul>
+                        <li>
+                            <a href="{{ path('admin_export_show', { 'id': export.id }) }}">show</a>
+                        </li>
+                        <li>
+                            <a href="{{ path('admin_export_edit', { 'id': export.id }) }}">edit</a>
+                        </li>
+                    </ul>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <ul>
+        <li>
+            <a href="{{ path('admin_export_new') }}">Create a new export</a>
+        </li>
+    </ul>
+{% endblock %}

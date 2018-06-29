@@ -1,0 +1,266 @@
+<?php
+
+namespace AppBundle\Entity;
+
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\Mapping as ORM;
+
+/**
+ * Venta
+ *
+ * @ORM\Table(name="venta")
+ * @ORM\Entity(repositoryClass="AppBundle\Repository\VentaRepository")
+ */
+class Venta
+{
+    /**
+     * @var int
+     *
+     * @ORM\Column(name="id", type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="AUTO")
+     */
+    private $id;
+
+    /**
+     * @var float
+     *
+     * @ORM\Column(name="total", type="float")
+     */
+    private $total;
+
+    /**
+     * @var float
+     *
+     * @ORM\Column(name="total_pagado", type="float")
+     */
+    private $totalPagado;
+
+    /**
+     * @var bool
+     *
+     * @ORM\Column(name="saldada", type="boolean")
+     */
+    private $saldada;
+
+    /**
+     * @var bool
+     *
+     * @ORM\Column(name="actualizada", type="boolean")
+     */
+    private $actualizada;
+
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="fecha", type="datetime")
+     */
+    private $fecha;
+
+
+    /**
+     * Get id
+     *
+     * @return int
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    /**
+     * Set total
+     *
+     * @param float $total
+     *
+     * @return Venta
+     */
+    public function setTotal($total)
+    {
+        $this->total = $total;
+
+        return $this;
+    }
+
+    /**
+     * Get total
+     *
+     * @return float
+     */
+    public function getTotal()
+    {
+        return $this->total;
+    }
+
+    /**
+     * Set totalPagado
+     *
+     * @param float $totalPagado
+     *
+     * @return Venta
+     */
+    public function setTotalPagado($totalPagado)
+    {
+        $this->totalPagado = $totalPagado;
+
+        return $this;
+    }
+
+    /**
+     * Get totalPagado
+     *
+     * @return float
+     */
+    public function getTotalPagado()
+    {
+        return $this->totalPagado;
+    }
+
+    /**
+     * Set saldada
+     *
+     * @param boolean $saldada
+     *
+     * @return Venta
+     */
+    public function setSaldada($saldada)
+    {
+        $this->saldada = $saldada;
+
+        return $this;
+    }
+
+    /**
+     * Get saldada
+     *
+     * @return bool
+     */
+    public function getSaldada()
+    {
+        return $this->saldada;
+    }
+
+    /**
+     * Set actualizada
+     *
+     * @param boolean $actualizada
+     *
+     * @return Venta
+     */
+    public function setActualizada($actualizada)
+    {
+        $this->actualizada = $actualizada;
+
+        return $this;
+    }
+
+    /**
+     * Get actualizada
+     *
+     * @return bool
+     */
+    public function getActualizada()
+    {
+        return $this->actualizada;
+    }
+
+    /**
+     * Set fecha
+     *
+     * @param \DateTime $fecha
+     *
+     * @return Venta
+     */
+    public function setFecha($fecha)
+    {
+        $this->fecha = $fecha;
+
+        return $this;
+    }
+
+    /**
+     * Get fecha
+     *
+     * @return \DateTime
+     */
+    public function getFecha()
+    {
+        return $this->fecha;
+    }
+    /**
+     * @ORM\OneToMany(targetEntity="productoVenta", mappedBy="venta")
+     */
+    private $productoVenta;
+
+    public function __construct()
+    {
+        $this->productoVenta = new ArrayCollection();
+
+    }
+
+    /**
+     * Add productoVentum
+     *
+     * @param \AppBundle\Entity\productoVenta $productoVentum
+     *
+     * @return Venta
+     */
+    public function addProductoVentum(\AppBundle\Entity\productoVenta $productoVentum)
+    {
+        $this->productoVenta[] = $productoVentum;
+
+        return $this;
+    }
+
+    /**
+     * Remove productoVentum
+     *
+     * @param \AppBundle\Entity\productoVenta $productoVentum
+     */
+    public function removeProductoVentum(\AppBundle\Entity\productoVenta $productoVentum)
+    {
+        $this->productoVenta->removeElement($productoVentum);
+    }
+
+    /**
+     * Get productoVenta
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getProductoVenta()
+    {
+        return $this->productoVenta;
+    }
+
+    /**
+     * @ORM\ManyToOne(targetEntity="Cliente", inversedBy="venta")
+     * @ORM\JoinColumn(name="cliente_id", referencedColumnName="id")
+     */
+    private $cliente;
+
+
+    /**
+     * Set cliente
+     *
+     * @param \AppBundle\Entity\Cliente $cliente
+     *
+     * @return Venta
+     */
+    public function setCliente(\AppBundle\Entity\Cliente $cliente = null)
+    {
+        $this->cliente = $cliente;
+
+        return $this;
+    }
+
+    /**
+     * Get cliente
+     *
+     * @return \AppBundle\Entity\Cliente
+     */
+    public function getCliente()
+    {
+        return $this->cliente;
+    }
+
+}
